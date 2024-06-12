@@ -1,0 +1,8 @@
+{
+  "USER_REGISTERED": "User registered successfully",
+  "OTP_SENT": "OTP sent successfully",
+  "OTP_VERIFIED": "OTP verified successfully",
+  "PASSWORD_RESET": "Password reset successfully",
+  "USER_LOGGED_IN": "User logged in successfully",
+  "messageSent": "Message sent successfully"
+}

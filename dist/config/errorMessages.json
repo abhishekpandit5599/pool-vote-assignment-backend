@@ -1,0 +1,11 @@
+{
+    "USER_ALREADY_EXISTS": "User already exists",
+    "USER_NOT_FOUND": "User not found",
+    "INVALID_CREDENTIALS": "Invalid credentials",
+    "OTP_RESEND_NOT_ALLOWED": "OTP resend not allowed yet",
+    "OTP_EXPIRED": "OTP expired or invalid",
+    "INTERNAL_SERVER_ERROR": "Internal server error",
+    "poolNotFound": "Pool not found",
+    "invalidOption": "Invalid options",
+    "alreadyVoted": "Already voted"
+}
