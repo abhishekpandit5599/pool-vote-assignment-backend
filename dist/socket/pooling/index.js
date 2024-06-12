@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePollingResults = void 0;
 const Pool_1 = __importDefault(require("../../models/Pool"));
+const socketEvents_1 = require("../../config/socketEvents");
 // Function to update and emit polling results
 const updatePollingResults = (socket, poolId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -23,12 +24,11 @@ const updatePollingResults = (socket, poolId) => __awaiter(void 0, void 0, void 
             return;
         }
         // Emit updated polling results to all clients in the room
-        socket.to(poolId).emit("polling-results-updated", pool.votes);
+        socket.to(poolId).emit(socketEvents_1.SOCKET_EVENTS.POLLING_RESULTS_UPDATED, pool.votes);
         console.log("Polling results updated for pool:", poolId);
     }
     catch (error) {
         console.error("Error updating polling results:", error);
-        // Handle errors as needed
     }
 });
 exports.updatePollingResults = updatePollingResults;

@@ -32,6 +32,8 @@ const io = new socket_io_1.Server(server, {
         methods: ["GET", "POST"]
     }
 });
+// Socket.IO setup
+app.set('socketServer', io);
 io.on('connection', (socket) => {
     console.log('user is connected');
     (0, chatting_1.poolChatHandler)(socket);

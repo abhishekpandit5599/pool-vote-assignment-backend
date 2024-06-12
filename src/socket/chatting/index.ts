@@ -1,4 +1,5 @@
 import { Socket } from "socket.io";
+import { SOCKET_EVENTS } from "../../config/socketEvents";
 import Chat from "../../models/Chat";
 
 const rooms: Record<string, string[]> = {};
@@ -13,7 +14,7 @@ export const poolChatHandler = (socket: Socket) => {
     if (!rooms[poolId]) {
       rooms[poolId] = [];
     }
-    socket.emit("room-created", { poolId });
+    socket.emit(SOCKET_EVENTS.ROOM_CREATED, { poolId });
     console.log("Created new room for pool:", poolId);
   };
 
@@ -22,8 +23,8 @@ export const poolChatHandler = (socket: Socket) => {
       if (!rooms[roomId].includes(peerId)) {
         rooms[roomId].push(peerId);
         socket.join(roomId);
-        socket.to(roomId).emit("user-joined", { peerId });
-        socket.emit("get-users", {
+        socket.to(roomId).emit(SOCKET_EVENTS.USER_JOINED, { peerId });
+        socket.emit(SOCKET_EVENTS.GET_USERS, {
           roomId,
           participants: rooms[roomId],
         });
@@ -32,23 +33,22 @@ export const poolChatHandler = (socket: Socket) => {
     } else {
       rooms[roomId] = [peerId];
       socket.join(roomId);
-      socket.emit("get-users", {
+      socket.emit(SOCKET_EVENTS.GET_USERS, {
         roomId,
         participants: rooms[roomId],
       });
       console.log("Room created and user joined:", roomId, peerId);
     }
 
-    socket.on("disconnect", () => {
+    socket.on(SOCKET_EVENTS.DISCONNECT, () => {
       leaveRoom({ roomId, peerId });
-      console.log("User left the room:", roomId, peerId);
     });
   };
 
   const leaveRoom = ({ roomId, peerId }: IRoomParams) => {
     if (rooms[roomId]) {
       rooms[roomId] = rooms[roomId].filter((id) => id !== peerId);
-      socket.to(roomId).emit("user-disconnected", peerId);
+      socket.to(roomId).emit(SOCKET_EVENTS.USER_DISCONNECTED, peerId);
       console.log("User disconnected from room:", roomId, peerId);
     }
   };
@@ -71,7 +71,7 @@ export const poolChatHandler = (socket: Socket) => {
       });
 
       // Emit the new message to all clients in the room
-      socket.to(roomId).emit("new-message", chatMessage);
+      socket.to(roomId).emit(SOCKET_EVENTS.NEW_MESSAGE, chatMessage);
       console.log("Message sent to room:", roomId);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -79,7 +79,7 @@ export const poolChatHandler = (socket: Socket) => {
     }
   };
 
-  socket.on("create-room", createRoom);
-  socket.on("join-room", joinRoom);
-  socket.on("send-message", sendMessage);
+  socket.on(SOCKET_EVENTS.CREATE_ROOM, createRoom);
+  socket.on(SOCKET_EVENTS.JOIN_ROOM, joinRoom);
+  socket.on(SOCKET_EVENTS.SEND_MESSAGE, sendMessage);
 };

@@ -32,6 +32,9 @@ const io = new Server(server,{
     }
 });
 
+// Socket.IO setup
+app.set('socketServer', io);
+
 io.on('connection', (socket)=>{
     console.log('user is connected');
 

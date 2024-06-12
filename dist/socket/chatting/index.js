@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.poolChatHandler = void 0;
+const socketEvents_1 = require("../../config/socketEvents");
 const Chat_1 = __importDefault(require("../../models/Chat"));
 const rooms = {};
 const poolChatHandler = (socket) => {
@@ -20,7 +21,7 @@ const poolChatHandler = (socket) => {
         if (!rooms[poolId]) {
             rooms[poolId] = [];
         }
-        socket.emit("room-created", { poolId });
+        socket.emit(socketEvents_1.SOCKET_EVENTS.ROOM_CREATED, { poolId });
         console.log("Created new room for pool:", poolId);
     };
     const joinRoom = ({ roomId, peerId }) => {
@@ -28,8 +29,8 @@ const poolChatHandler = (socket) => {
             if (!rooms[roomId].includes(peerId)) {
                 rooms[roomId].push(peerId);
                 socket.join(roomId);
-                socket.to(roomId).emit("user-joined", { peerId });
-                socket.emit("get-users", {
+                socket.to(roomId).emit(socketEvents_1.SOCKET_EVENTS.USER_JOINED, { peerId });
+                socket.emit(socketEvents_1.SOCKET_EVENTS.GET_USERS, {
                     roomId,
                     participants: rooms[roomId],
                 });
@@ -39,21 +40,20 @@ const poolChatHandler = (socket) => {
         else {
             rooms[roomId] = [peerId];
             socket.join(roomId);
-            socket.emit("get-users", {
+            socket.emit(socketEvents_1.SOCKET_EVENTS.GET_USERS, {
                 roomId,
                 participants: rooms[roomId],
             });
             console.log("Room created and user joined:", roomId, peerId);
         }
-        socket.on("disconnect", () => {
+        socket.on(socketEvents_1.SOCKET_EVENTS.DISCONNECT, () => {
             leaveRoom({ roomId, peerId });
-            console.log("User left the room:", roomId, peerId);
         });
     };
     const leaveRoom = ({ roomId, peerId }) => {
         if (rooms[roomId]) {
             rooms[roomId] = rooms[roomId].filter((id) => id !== peerId);
-            socket.to(roomId).emit("user-disconnected", peerId);
+            socket.to(roomId).emit(socketEvents_1.SOCKET_EVENTS.USER_DISCONNECTED, peerId);
             console.log("User disconnected from room:", roomId, peerId);
         }
     };
@@ -70,7 +70,7 @@ const poolChatHandler = (socket) => {
                 message: chatMessage,
             });
             // Emit the new message to all clients in the room
-            socket.to(roomId).emit("new-message", chatMessage);
+            socket.to(roomId).emit(socketEvents_1.SOCKET_EVENTS.NEW_MESSAGE, chatMessage);
             console.log("Message sent to room:", roomId);
         }
         catch (error) {
@@ -78,8 +78,8 @@ const poolChatHandler = (socket) => {
             // Handle errors as needed
         }
     });
-    socket.on("create-room", createRoom);
-    socket.on("join-room", joinRoom);
-    socket.on("send-message", sendMessage);
+    socket.on(socketEvents_1.SOCKET_EVENTS.CREATE_ROOM, createRoom);
+    socket.on(socketEvents_1.SOCKET_EVENTS.JOIN_ROOM, joinRoom);
+    socket.on(socketEvents_1.SOCKET_EVENTS.SEND_MESSAGE, sendMessage);
 };
 exports.poolChatHandler = poolChatHandler;
