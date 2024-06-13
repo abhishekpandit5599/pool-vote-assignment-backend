@@ -18,6 +18,7 @@ const routes_1 = __importDefault(require("./routes"));
 const chatting_1 = require("./socket/chatting");
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_output_json_1 = __importDefault(require("./config/swagger-output.json"));
+const pooling_1 = require("./socket/pooling");
 const PORT = process.env.PORT || 5000;
 const app = (0, express_1.default)(); // create app instance from express
 app.use(express_1.default.json());
@@ -37,6 +38,7 @@ app.set('socketServer', io);
 io.on('connection', (socket) => {
     console.log('user is connected');
     (0, chatting_1.poolChatHandler)(socket);
+    (0, pooling_1.poolHandler)(socket);
     socket.on('disconnect', () => {
         console.log('user is disconnected');
     });

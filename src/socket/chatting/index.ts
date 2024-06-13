@@ -1,6 +1,5 @@
 import { Socket } from "socket.io";
 import { SOCKET_EVENTS } from "../../config/socketEvents";
-import Chat from "../../models/Chat";
 
 const rooms: Record<string, string[]> = {};
 
@@ -53,33 +52,28 @@ export const poolChatHandler = (socket: Socket) => {
     }
   };
 
-  const sendMessage = async (
-    roomId: string,
-    message: { sender: string; content: string }
-  ) => {
-    try {
-      const chatMessage = {
-        sender: message.sender,
-        content: message.content,
-        createdAt: new Date(),
-      };
-
-      // Save the message to the database
-      await Chat.create({
-        poolId: roomId,
-        message: chatMessage,
-      });
-
-      // Emit the new message to all clients in the room
-      socket.to(roomId).emit(SOCKET_EVENTS.NEW_MESSAGE, chatMessage);
-      console.log("Message sent to room:", roomId);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      // Handle errors as needed
-    }
-  };
-
   socket.on(SOCKET_EVENTS.CREATE_ROOM, createRoom);
   socket.on(SOCKET_EVENTS.JOIN_ROOM, joinRoom);
-  socket.on(SOCKET_EVENTS.SEND_MESSAGE, sendMessage);
+  // socket.on(SOCKET_EVENTS.SEND_MESSAGE, sendMessageSocket);
+};
+
+export const sendMessageSocket = async (
+  socket: Socket,
+  roomId: string,
+  message: { sender: string; content: string }
+) => {
+  try {
+    const chatMessage = {
+      sender: message.sender,
+      content: message.content,
+      createdAt: new Date(),
+    };
+
+    // Emit the new message to all clients in the room
+    socket.to(roomId).emit(SOCKET_EVENTS.NEW_MESSAGE, chatMessage);
+    console.log("Message sent to room:", roomId);
+  } catch (error) {
+    console.error("Error sending message:", error);
+    // Handle errors as needed
+  }
 };

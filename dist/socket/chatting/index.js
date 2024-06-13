@@ -8,13 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.poolChatHandler = void 0;
+exports.sendMessageSocket = exports.poolChatHandler = void 0;
 const socketEvents_1 = require("../../config/socketEvents");
-const Chat_1 = __importDefault(require("../../models/Chat"));
 const rooms = {};
 const poolChatHandler = (socket) => {
     const createRoom = (poolId) => {
@@ -57,29 +53,25 @@ const poolChatHandler = (socket) => {
             console.log("User disconnected from room:", roomId, peerId);
         }
     };
-    const sendMessage = (roomId, message) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            const chatMessage = {
-                sender: message.sender,
-                content: message.content,
-                createdAt: new Date(),
-            };
-            // Save the message to the database
-            yield Chat_1.default.create({
-                poolId: roomId,
-                message: chatMessage,
-            });
-            // Emit the new message to all clients in the room
-            socket.to(roomId).emit(socketEvents_1.SOCKET_EVENTS.NEW_MESSAGE, chatMessage);
-            console.log("Message sent to room:", roomId);
-        }
-        catch (error) {
-            console.error("Error sending message:", error);
-            // Handle errors as needed
-        }
-    });
     socket.on(socketEvents_1.SOCKET_EVENTS.CREATE_ROOM, createRoom);
     socket.on(socketEvents_1.SOCKET_EVENTS.JOIN_ROOM, joinRoom);
-    socket.on(socketEvents_1.SOCKET_EVENTS.SEND_MESSAGE, sendMessage);
+    // socket.on(SOCKET_EVENTS.SEND_MESSAGE, sendMessageSocket);
 };
 exports.poolChatHandler = poolChatHandler;
+const sendMessageSocket = (socket, roomId, message) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const chatMessage = {
+            sender: message.sender,
+            content: message.content,
+            createdAt: new Date(),
+        };
+        // Emit the new message to all clients in the room
+        socket.to(roomId).emit(socketEvents_1.SOCKET_EVENTS.NEW_MESSAGE, chatMessage);
+        console.log("Message sent to room:", roomId);
+    }
+    catch (error) {
+        console.error("Error sending message:", error);
+        // Handle errors as needed
+    }
+});
+exports.sendMessageSocket = sendMessageSocket;

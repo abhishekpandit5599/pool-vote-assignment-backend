@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SOCKET_EVENTS = void 0;
 exports.SOCKET_EVENTS = {
     CREATE_ROOM: "create-room",
+    JOIN_POOL: "join-pool",
     JOIN_ROOM: "join-room",
     SEND_MESSAGE: "send-message",
     LEAVE_ROOM: "leave-room",

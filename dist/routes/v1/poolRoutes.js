@@ -12,6 +12,7 @@ const router = (0, express_1.Router)();
 router.post("/create", authMiddleware_1.authMiddleware, (0, validateRequest_1.validateRequest)(poolSchemas_1.createPoolSchema), poolController_1.createPool);
 router.post("/vote", authMiddleware_1.authMiddleware, (0, validateRequest_1.validateRequest)(poolSchemas_1.votePoolSchema), poolController_1.votePool);
 router.get("/getPools", poolController_1.getPools);
+router.get("/getPool/:poolId", poolController_1.getPool);
 // Chat routes
 router.post("/chat/send", authMiddleware_1.authMiddleware, (0, validateRequest_1.validateRequest)(chatMessageSchema_1.sendMessageSchema), chatController_1.sendMessage);
 router.get("/chat/:poolId", authMiddleware_1.authMiddleware, chatController_1.getMessages);

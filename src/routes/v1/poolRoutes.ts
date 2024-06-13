@@ -3,6 +3,7 @@ import {
   createPool,
   votePool,
   getPools,
+  getPool,
 } from "../../controllers/v1/poolController";
 import { sendMessage, getMessages } from "../../controllers/v1/chatController";
 import { validateRequest } from "../../middleware/validateRequest";
@@ -24,6 +25,7 @@ router.post(
 );
 router.post("/vote", authMiddleware, validateRequest(votePoolSchema), votePool);
 router.get("/getPools", getPools);
+router.get("/getPool/:poolId", getPool);
 
 // Chat routes
 router.post(

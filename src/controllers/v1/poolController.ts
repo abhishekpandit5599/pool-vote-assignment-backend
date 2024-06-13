@@ -82,3 +82,14 @@ export const getPools = async (_: Request, res: Response) => {
       .json(errorResponse(errorMessages.INTERNAL_SERVER_ERROR));
   }
 };
+
+export const getPool = async (req: Request, res: Response) => {
+  try {
+    const pools = await Pool.findById(req.params.poolId);
+    return res.json(successResponse(pools));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(errorResponse(errorMessages.INTERNAL_SERVER_ERROR));
+  }
+};

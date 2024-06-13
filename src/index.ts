@@ -13,6 +13,7 @@ import routes from './routes';
 import { poolChatHandler } from "./socket/chatting";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./config/swagger-output.json";
+import { poolHandler } from "./socket/pooling";
 
 const PORT = process.env.PORT || 5000;
 const app = express(); // create app instance from express
@@ -39,6 +40,7 @@ io.on('connection', (socket)=>{
     console.log('user is connected');
 
     poolChatHandler(socket);
+    poolHandler(socket);
 
     socket.on('disconnect', ()=>{
         console.log('user is disconnected');

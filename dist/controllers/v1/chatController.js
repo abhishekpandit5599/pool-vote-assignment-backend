@@ -18,6 +18,7 @@ const responseUtils_1 = require("../../utils/responseUtils");
 const successMessages_json_1 = __importDefault(require("../../config/successMessages.json"));
 const errorMessages_json_1 = __importDefault(require("../../config/errorMessages.json"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const index_1 = require("../../socket/chatting/index");
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { poolId, message } = req.body;
     const userId = req.user.id;
@@ -29,12 +30,15 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             userId: new mongoose_1.default.Types.ObjectId(userId),
             message: enrichedMessage,
         });
+        (0, index_1.sendMessageSocket)(req.app.get("socketServer"), poolId, enrichedMessage);
         yield newMessage.save();
         return res.status(201).json((0, responseUtils_1.successResponse)(successMessages_json_1.default.messageSent));
     }
     catch (error) {
         console.log(error);
-        return res.status(500).json((0, responseUtils_1.errorResponse)(errorMessages_json_1.default.INTERNAL_SERVER_ERROR));
+        return res
+            .status(500)
+            .json((0, responseUtils_1.errorResponse)(errorMessages_json_1.default.INTERNAL_SERVER_ERROR));
     }
 });
 exports.sendMessage = sendMessage;
@@ -50,7 +54,9 @@ const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return res.json((0, responseUtils_1.successResponse)(messages));
     }
     catch (error) {
-        return res.status(500).json((0, responseUtils_1.errorResponse)(errorMessages_json_1.default.INTERNAL_SERVER_ERROR));
+        return res
+            .status(500)
+            .json((0, responseUtils_1.errorResponse)(errorMessages_json_1.default.INTERNAL_SERVER_ERROR));
     }
 });
 exports.getMessages = getMessages;

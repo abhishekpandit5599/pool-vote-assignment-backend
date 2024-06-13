@@ -5,6 +5,7 @@ import { successResponse, errorResponse } from "../../utils/responseUtils";
 import successMessages from "../../config/successMessages.json";
 import errorMessages from "../../config/errorMessages.json";
 import mongoose from "mongoose";
+import { sendMessageSocket } from "../../socket/chatting/index";
 
 export const sendMessage = async (
   req: Request | CustomRequest,
@@ -17,7 +18,7 @@ export const sendMessage = async (
     // Add additional fields to the message
     const enrichedMessage = {
       ...message,
-      sender: new mongoose.Types.ObjectId(userId)
+      sender: new mongoose.Types.ObjectId(userId),
     };
     const newMessage = new Chat({
       poolId: new mongoose.Types.ObjectId(poolId),
@@ -25,11 +26,14 @@ export const sendMessage = async (
       message: enrichedMessage,
     });
 
+    sendMessageSocket(req.app.get("socketServer"), poolId, enrichedMessage);
     await newMessage.save();
     return res.status(201).json(successResponse(successMessages.messageSent));
   } catch (error) {
     console.log(error);
-    return res.status(500).json(errorResponse(errorMessages.INTERNAL_SERVER_ERROR));
+    return res
+      .status(500)
+      .json(errorResponse(errorMessages.INTERNAL_SERVER_ERROR));
   }
 };
 
@@ -49,6 +53,8 @@ export const getMessages = async (
 
     return res.json(successResponse(messages));
   } catch (error) {
-    return res.status(500).json(errorResponse(errorMessages.INTERNAL_SERVER_ERROR));
+    return res
+      .status(500)
+      .json(errorResponse(errorMessages.INTERNAL_SERVER_ERROR));
   }
 };

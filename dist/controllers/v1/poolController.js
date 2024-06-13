@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPools = exports.votePool = exports.createPool = void 0;
+exports.getPool = exports.getPools = exports.votePool = exports.createPool = void 0;
 const Pool_1 = __importDefault(require("../../models/Pool"));
 const Voter_1 = __importDefault(require("../../models/Voter"));
 const responseUtils_1 = require("../../utils/responseUtils");
@@ -85,3 +85,15 @@ const getPools = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getPools = getPools;
+const getPool = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const pools = yield Pool_1.default.findById(req.params.poolId);
+        return res.json((0, responseUtils_1.successResponse)(pools));
+    }
+    catch (error) {
+        return res
+            .status(500)
+            .json((0, responseUtils_1.errorResponse)(errorMessages_json_1.default.INTERNAL_SERVER_ERROR));
+    }
+});
+exports.getPool = getPool;
